@@ -1,5 +1,5 @@
 * Usage
-Bind any interactive function under the ~calc-at-point-~ you want to use. If you run them while in a selection, that operation will be applied to all numbers inside that selection. To repeat last calculation performed, run ~calc-at-point-calculation-repeat~ or just press return while having a empty ~calc-at-point~ prompt open. To use a proper calculator instead of just addition or just division, run ~calc-at-point-quick-calc~.
+Bind any interactive function under the ~calc-at-point-~ namespace you want to use. If you run them while selecting text, that operation will be applied to all numbers inside that selection. To repeat last calculation performed, run ~calc-at-point-calculation-repeat~ or just press return while having a empty calculation prompt open. To use a proper calculator instead of just addition or just division, etc run ~calc-at-point-quick-calc~.
 
 * Comparison
 ** operate-on-number
