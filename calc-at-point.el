@@ -139,17 +139,19 @@ used to quickly collect the bounds of all THINGs in the buffer."
 ;; * Operators
 ;; ** Misc
 ;;;###autoload
-(defun calc-at-point-repeat-last ()
-  "Repeats the last calculation."
+(defun calc-at-point-repeat-last (&optional beg end)
+  "Repeats the last calculation.
+BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run))
+  (calc-at-point-run nil beg end))
 
 ;;;###autoload
-(defun calc-at-point-quick-calc ()
-  "Run number at point through `quick-calc'."
+(defun calc-at-point-quick-calc (&optional beg end)
+  "Run number at point through `quick-calc'.
+BEG and END specifies in what region this function will run."
   (interactive)
   (calc-at-point-run
-   (lambda (a) (car (calc-do-alg-entry (number-to-string a))))))
+   (lambda (a) (car (calc-do-alg-entry (number-to-string a)))) beg end))
 
 ;; ** 2 arg
 ;;;###autoload
