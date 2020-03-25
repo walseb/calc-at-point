@@ -30,7 +30,7 @@
 (require 'dash)
 (require 'thingatpt)
 
-(defvar calc-at-point-last-calculation nil
+(defvar calc-at-point-last-calculation
   "The last calculation. Can be repeated using `calc-at-point-repeat-last'.")
 
 ;; * Calculate
@@ -76,7 +76,10 @@ used to quickly collect the bounds of all THINGs in the buffer."
 	   (largest (max beg end))
 	   (smallest (min beg end)))
       (goto-char smallest)
-      (while (and (< (point) largest) (search-forward-regexp (or thing-regex "-?[0-9]+\\.?[0-9]*") nil t))
+      (while (and
+	      (search-forward-regexp (or thing-regex "-?[0-9]+\\.?[0-9]*") nil t)
+	      ;; Add 1 so that numbers just inside selection box are also included
+	      (< (point) (+ 1 largest)))
 	(push (bounds-of-thing-at-point 'number) numbers)
 	(goto-char (cdr (car numbers))))
       numbers)))
@@ -119,7 +122,7 @@ used to quickly collect the bounds of all THINGs in the buffer."
   (let* ((input-raw (completing-read prompt nil))
 	 (input (string-to-number input-raw)))
     (if (string= input-raw "")
-	(calc-at-point-repeat-char)
+	(calc-at-point-repeat-last)
       (calc-at-point-run (apply-partially func input) beg end thing thing-regex))))
 
 ;; * Thing at point
@@ -139,7 +142,7 @@ used to quickly collect the bounds of all THINGs in the buffer."
 (defun calc-at-point-repeat-last ()
   "Repeats the last calculation."
   (interactive)
-  (calc-at-point-calculate))
+  (calc-at-point-run))
 
 ;;;###autoload
 (defun calc-at-point-quick-calc ()
