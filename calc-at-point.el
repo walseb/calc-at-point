@@ -3,7 +3,7 @@
 ;; Author: Sebastian Wålinder <s.walinder@gmail.com>
 ;; URL: https://github.com/walseb/calc-at-point
 ;; Version: 1.0
-;; Package-Requires: ((emacs "26") (dash-functional "1.2.0"))
+;; Package-Requires: ((emacs "26") (dash "2.12.0"))
 ;; Keywords: convenience
 
 ;; calc-at-point is free software; you can redistribute it and/or modify it
