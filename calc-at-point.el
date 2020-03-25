@@ -3,7 +3,7 @@
 ;; Author: Sebastian Wålinder <s.walinder@gmail.com>
 ;; URL: https://github.com/walseb/calc-at-point
 ;; Version: 1.0
-;; Package-Requires: ((emacs "26") (dash "2.12.0"))
+;; Package-Requires: ((emacs "26") (dash-functional "1.2.0"))
 ;; Keywords: convenience
 
 ;; calc-at-point is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@
 
 ;;; Code:
 (require 'calc)
-(require 'dash)
+(require 'dash-functional)
 (require 'thingatpt)
 
 (defvar calc-at-point-last-calculation
@@ -86,8 +86,8 @@ used to quickly collect the bounds of all THINGs in the buffer."
 
 ;; ** Wrappers
 (defun calc-at-point-run (&optional func beg end thing thing-regex)
-  "Run FUNC at THING at point or if selection is active, run it on every THING
-between within selection.
+  "Run FUNC at THING at point.
+Or if selection is active, run it on every THING between within selection.
 FUNC is the calculation to be performed and should only accept one argument,
 that argument will be the number at point.
 BEG and END specifies in what region this function will run.
