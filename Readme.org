@@ -15,3 +15,12 @@ Cons:
 
 ** macro-math
 [[https://github.com/nschum/macro-math.el][macro-math]] is very complementary to this package as it allows you to write out the calculation in buffer and then run it, check it out.
+
+* Rectangle selection
+Currently this package doesn't work with the default Emacs rectangle selection. However you can make it work in ~evil-mode~ easily by defining a new operator like this:
+#+BEGIN_SRC emacs-lisp
+(evil-define-operator my/calc-at-point-add-1 (beg end type)
+  (interactive "<R>")
+  (calc-at-point-add-1 beg end))
+#+END_SRC
+Running this new function while in ~visual-block~ state (or really any other) should now work fine
