@@ -3,7 +3,7 @@
 ;; Author: Sebastian Wålinder <s.walinder@gmail.com>
 ;; URL: https://github.com/walseb/calc-at-point
 ;; Version: 1.0
-;; Package-Requires: ((emacs "26") (dash "2.12.0"))
+;; Package-Requires: ((emacs "26") (dash "2.12.0") (dash-functional "1.2.0"))
 ;; Keywords: convenience
 
 ;; calc-at-point is free software; you can redistribute it and/or modify it
@@ -26,12 +26,13 @@
 ;; It supports repeating last calculation using `calc-at-point-repeat-last'
 
 ;;; Code:
-(require 'calc)
+(require 'dash)
 (require 'dash-functional)
+(require 'calc)
 (require 'thingatpt)
 
 (defvar calc-at-point-last-calculation
-  "The last calculation. Can be repeated using `calc-at-point-repeat-last'.")
+  "The last calculation.  Can be repeated using `calc-at-point-repeat-last'.")
 
 ;; * Calculate
 (defun calc-at-point-calculate (func &optional thing bounds)
@@ -62,7 +63,7 @@ that argument will be the number at point.
 BEG and END specifies in what region this function will run.
 THING is the thing to apply the calculate operation on (as defined by the
 package `thingatpt' in `bounds-of-thing-at-point'), by default `'number'
-is used. THING-REGEX is a regex of what the THING looks like,
+is used.  THING-REGEX is a regex of what the THING looks like,
 used to quickly collect the bounds of all THINGs in the buffer."
   (mapc (apply-partially 'calc-at-point-calculate func thing) (calc-at-point-get-all-things beg end thing-regex)))
 
@@ -93,7 +94,7 @@ that argument will be the number at point.
 BEG and END specifies in what region this function will run.
 THING is the thing to apply the calculate operation on (as defined by the
 package `thingatpt' in `bounds-of-thing-at-point'), by default `'number'
-is used. THING-REGEX is a regex of what the THING looks like,
+is used.  THING-REGEX is a regex of what the THING looks like,
 used to quickly collect the bounds of all THINGs in the buffer."
   (when func
     (setq calc-at-point-last-calculation func))
@@ -117,7 +118,7 @@ the buffer.
 BEG and END specifies in what region this function will run.
 THING is the thing to apply the calculate operation on (as defined by the
 package `thingatpt' in `bounds-of-thing-at-point'), by default `'number'
-is used. THING-REGEX is a regex of what the THING looks like,
+is used.  THING-REGEX is a regex of what the THING looks like,
 used to quickly collect the bounds of all THINGs in the buffer."
   (let* ((input-raw (completing-read prompt nil))
 	 (input (string-to-number input-raw)))
