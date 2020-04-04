@@ -39,14 +39,14 @@
   "The main function used to apply calculations to buffer contents.
 FUNC is the calculation to be performed and should only accept one argument,
 that argument will be the number at point.
-THING is the thing (as defined by the package `thingatpt' in
-`bounds-of-thing-at-point'), by default `'number' is used.
+THING is a function with zero arguments returning a cons cell with the bounds
+of the thing at point. If THING is nil `calc-at-point-get-number' is used.
 BOUNDS allows you to supply the bounds of where the number is located.
 This is used to increase performance while running this function over all
 numbers in selection."
   (let ((pt (point)))
     (save-excursion
-      (let* ((num-bounds (or bounds (bounds-of-thing-at-point (or thing 'number))))
+      (let* ((num-bounds (or bounds (funcall (or thing 'calc-at-point-get-number))))
 	     (num (string-to-number (buffer-substring-no-properties (car num-bounds) (cdr num-bounds))))
 	     (result (funcall func num)))
 	(unless (eq num result)
@@ -61,27 +61,32 @@ numbers in selection."
 FUNC is the calculation to be performed and should only accept one argument,
 that argument will be the number at point.
 BEG and END specifies in what region this function will run.
-THING is the thing to apply the calculate operation on (as defined by the
-package `thingatpt' in `bounds-of-thing-at-point'), by default `'number'
+THING is a function with zero arguments returning a cons cell with the bounds
+of the thing at point. If THING is nil `calc-at-point-get-number' is used.
 is used.  THING-REGEX is a regex of what the THING looks like,
-used to quickly collect the bounds of all THINGs in the buffer."
-  (mapc (apply-partially 'calc-at-point-calculate func thing) (calc-at-point-get-all-things beg end thing-regex)))
+used to quickly collect the bounds of all THINGs in the buffer.
+If THING-REGEX is nil `calc-at-point-get-number-regex' is used."
+  (mapc (apply-partially 'calc-at-point-calculate func nil)
+	(calc-at-point-get-all-things beg end thing thing-regex)))
 
-(defun calc-at-point-get-all-things (beg end &optional thing-regex)
+(defun calc-at-point-get-all-things (beg end &optional thing thing-regex)
   "Gets the bounds of all things specified by THING-REGEX in region BEG END.
 BEG and END specifies in what region this function will run.
 THING-REGEX is a regex of what the THING looks like,
-used to quickly collect the bounds of all THINGs in the buffer."
+used to quickly collect the bounds of all THINGs in the buffer.
+If THING-REGEX is nil `calc-at-point-get-number-regex' is used.
+THING is a function with zero arguments returning a cons cell with the bounds
+of the thing at point. If THING is nil `calc-at-point-get-number' is used."
   (save-excursion
     (let* ((numbers '())
 	   (largest (max beg end))
 	   (smallest (min beg end)))
       (goto-char smallest)
       (while (and
-	      (search-forward-regexp (or thing-regex "-?[0-9]+\\.?[0-9]*") nil t)
+	      (search-forward-regexp (or thing-regex calc-at-point-get-number-regex) nil t)
 	      ;; Add 1 so that numbers just inside selection box are also included
 	      (< (point) (+ 1 largest)))
-	(push (bounds-of-thing-at-point 'number) numbers)
+	(push (funcall (or thing 'calc-at-point-get-number)) numbers)
 	(goto-char (cdr (car numbers))))
       numbers)))
 
@@ -92,10 +97,10 @@ Or if selection is active, run it on every THING between within selection.
 FUNC is the calculation to be performed and should only accept one argument,
 that argument will be the number at point.
 BEG and END specifies in what region this function will run.
-THING is the thing to apply the calculate operation on (as defined by the
-package `thingatpt' in `bounds-of-thing-at-point'), by default `'number'
-is used.  THING-REGEX is a regex of what the THING looks like,
-used to quickly collect the bounds of all THINGs in the buffer."
+THING is a function that returns the bounds of the thing to apply the
+calculate operation on, by default `calc-at-point-get-number' is used.
+THING-REGEX is a regex of what the THING looks like,
+it's used to quickly collect the bounds of all THINGs in the buffer."
   (when func
     (setq calc-at-point-last-calculation func))
 
@@ -116,26 +121,26 @@ FUNC is the calculation to be performed and should only accept two arguments,
 the first one is the user input, the second one is the number at point in
 the buffer.
 BEG and END specifies in what region this function will run.
-THING is the thing to apply the calculate operation on (as defined by the
-package `thingatpt' in `bounds-of-thing-at-point'), by default `'number'
-is used.  THING-REGEX is a regex of what the THING looks like,
-used to quickly collect the bounds of all THINGs in the buffer."
+THING is a function that returns the bounds of the thing to apply the
+calculate operation on, by default `calc-at-point-get-number' is used.
+THING-REGEX is a regex of what the THING looks like,
+it's used to quickly collect the bounds of all THINGs in the buffer."
   (let* ((input-raw (completing-read prompt nil))
 	 (input (string-to-number input-raw)))
     (if (string= input-raw "")
 	(calc-at-point-repeat-last)
       (calc-at-point-run (apply-partially func input) beg end thing thing-regex))))
 
-;; * Thing at point
-;; thing-at-point doesn't have `'number' included in `bounds-of-thing-at-point' for whatever reason
-;; Some day I will make a pull request for this
-(put 'number 'bounds-of-thing-at-point
-     (lambda ()
-       (let ((thing (thing-at-point-looking-at "-?[0-9]+\\.?[0-9]*" 500)))
-	 (when thing
-	   (let ((beginning (match-beginning 0))
-		 (end (match-end 0)))
-	     (cons beginning end))))))
+;; * Default get number function
+(defvar calc-at-point-get-number-regex "-?[0-9]+\\.?[0-9]*")
+
+(defun calc-at-point-get-number ()
+  "Return the bounds of the number at point."
+  (let ((thing (thing-at-point-looking-at calc-at-point-get-number-regex 500)))
+    (when thing
+      (let ((beginning (match-beginning 0))
+	    (end (match-end 0)))
+	(cons beginning end)))))
 
 ;; * Operators
 ;; ** Misc
