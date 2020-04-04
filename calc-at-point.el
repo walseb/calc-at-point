@@ -168,14 +168,14 @@ BEG and END specifies in what region this function will run."
   (calc-at-point-run-input "+ " '+ beg end))
 
 ;;;###autoload
-(defun calc-at-point-neg (&optional beg end flip)
-  "Run negation on number at point.
+(defun calc-at-point-sub (&optional beg end flip)
+  "Run subtraction on number at point.
 BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input "- " '- beg end)
-    (calc-at-point-run-input "(flip) - " '- beg end)))
+      (calc-at-point-run-input "(flip) - " '- beg end)
+    (calc-at-point-run-input "- " (-flip '-) beg end)))
 
 ;;;###autoload
 (defun calc-at-point-mult (&optional beg end)
@@ -191,8 +191,8 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input "/ " (-flip '/) beg end)
-    (calc-at-point-run-input "(flip) / " '/ beg end)))
+      (calc-at-point-run-input "/ " '/ beg end)
+    (calc-at-point-run-input "(flip) / " (-flip '/) beg end)))
 
 ;;;###autoload
 (defun calc-at-point-mod (&optional beg end flip)
@@ -201,8 +201,8 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input "% " (-flip 'mod) beg end)
-    (calc-at-point-run-input "(flip) % " 'mod beg end)))
+      (calc-at-point-run-input "(flip) % " 'mod beg end)
+    (calc-at-point-run-input "% " (-flip 'mod) beg end)))
 
 ;;;###autoload
 (defun calc-at-point-exp (&optional beg end flip)
@@ -211,8 +211,8 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input "^ " (-flip 'expt) beg end)
-    (calc-at-point-run-input "(flip) ^ " 'expt beg end)))
+      (calc-at-point-run-input "(flip) ^ " 'expt beg end)
+    (calc-at-point-run-input "^ " (-flip 'expt) beg end)))
 
 (defalias 'calc-at-point-raise 'calc-at-point-exp)
 
@@ -225,7 +225,7 @@ BEG and END specifies in what region this function will run."
   (calc-at-point-run (apply-partially '+ 1) beg end))
 
 ;;;###autoload
-(defun calc-at-point-neg-1 (&optional beg end)
+(defun calc-at-point-sub-1 (&optional beg end)
   "Decrease number at point by 1.
 BEG and END specifies in what region this function will run."
   (interactive)
