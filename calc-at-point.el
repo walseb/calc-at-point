@@ -64,8 +64,8 @@ BEG and END specifies in what region this function will run.
 THING is a function with zero arguments returning a cons cell with the bounds
 of the thing at point. THING-REGEX is a regex of what the THING looks like,
 used to quickly collect the bounds of all THINGs in the buffer."
-  (mapc (apply-partially 'calc-at-point-calculate func thing)
-	(calc-at-point-get-all-things beg end 'calc-at-point-get-number thing-regex)))
+  (mapc (apply-partially #'calc-at-point-calculate func thing)
+	(calc-at-point-get-all-things beg end #'calc-at-point-get-number thing-regex)))
 
 (defun calc-at-point-get-all-things (beg end thing thing-regex)
   "Gets the bounds of all things specified by THING-REGEX in region BEG END.
@@ -146,14 +146,14 @@ it's used to quickly collect the bounds of all THINGs in the buffer."
   "Repeats the last calculation.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex nil beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex nil beg end))
 
 ;;;###autoload
 (defun calc-at-point-quick-calc (&optional beg end)
   "Run number at point through `quick-calc'.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex
 		     (lambda (a) (car (calc-do-alg-entry (number-to-string a)))) beg end))
 
 ;; ** 2 arg
@@ -162,7 +162,7 @@ BEG and END specifies in what region this function will run."
   "Run addition on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "+ " '+ beg end))
+  (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "+ " '+ beg end))
 
 ;;;###autoload
 (defun calc-at-point-sub (&optional beg end flip)
@@ -171,15 +171,15 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "(flip) - " '- beg end)
-    (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "- " (-flip '-) beg end)))
+      (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "(flip) - " '- beg end)
+    (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "- " (-flip '-) beg end)))
 
 ;;;###autoload
 (defun calc-at-point-mult (&optional beg end)
   "Run multiplication on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "* " '* beg end))
+  (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "* " '* beg end))
 
 ;;;###autoload
 (defun calc-at-point-div (&optional beg end flip)
@@ -188,8 +188,8 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "/ " '/ beg end)
-    (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "(flip) / " (-flip '/) beg end)))
+      (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "/ " '/ beg end)
+    (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "(flip) / " (-flip '/) beg end)))
 
 ;;;###autoload
 (defun calc-at-point-mod (&optional beg end flip)
@@ -198,8 +198,8 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "(flip) % " 'mod beg end)
-    (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "% " (-flip 'mod) beg end)))
+      (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "(flip) % " 'mod beg end)
+    (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "% " (-flip 'mod) beg end)))
 
 ;;;###autoload
 (defun calc-at-point-exp (&optional beg end flip)
@@ -208,10 +208,10 @@ BEG and END specifies in what region this function will run.
 FLIP flips the order the operation is made in."
   (interactive)
   (if flip
-      (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "(flip) ^ " 'expt beg end)
-    (calc-at-point-run-input 'calc-at-point-get-number calc-at-point-get-number-regex "^ " (-flip 'expt) beg end)))
+      (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "(flip) ^ " 'expt beg end)
+    (calc-at-point-run-input #'calc-at-point-get-number calc-at-point-get-number-regex "^ " (-flip 'expt) beg end)))
 
-(defalias 'calc-at-point-raise 'calc-at-point-exp)
+(defalias 'calc-at-point-raise #'calc-at-point-exp)
 
 ;; ** 1 arg
 ;;;###autoload
@@ -219,84 +219,84 @@ FLIP flips the order the operation is made in."
   "Increase number at point by 1.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex (apply-partially '+ 1) beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex (apply-partially '+ 1) beg end))
 
 ;;;###autoload
 (defun calc-at-point-sub-1 (&optional beg end)
   "Decrease number at point by 1.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex (apply-partially (-flip '-) 1) beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex (apply-partially (-flip '-) 1) beg end))
 
 ;;;###autoload
 (defun calc-at-point-sqrt (&optional beg end)
   "Run square root on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'sqrt beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'sqrt beg end))
 
 ;;;###autoload
 (defun calc-at-point-abs (&optional beg end)
   "Run absolute on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'abs beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'abs beg end))
 
 ;;;###autoload
 (defun calc-at-point-round (&optional beg end)
   "Round number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'round beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'round beg end))
 
 ;;;###autoload
 (defun calc-at-point-floor (&optional beg end)
   "Floor number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'floor beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'floor beg end))
 
 ;;;###autoload
 (defun calc-at-point-cos (&optional beg end)
   "Run cos on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'cos beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'cos beg end))
 
 ;;;###autoload
 (defun calc-at-point-sin (&optional beg end)
   "Run sin on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'sin beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'sin beg end))
 
 ;;;###autoload
 (defun calc-at-point-tan (&optional beg end)
   "Run sin on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'tan beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'tan beg end))
 
 ;;;###autoload
 (defun calc-at-point-acos (&optional beg end)
   "Run acos on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'acos beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'acos beg end))
 
 ;;;###autoload
 (defun calc-at-point-asin (&optional beg end)
   "Run asin on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'asin beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'asin beg end))
 
 ;;;###autoload
 (defun calc-at-point-atan (&optional beg end)
   "Run atan on number at point.
 BEG and END specifies in what region this function will run."
   (interactive)
-  (calc-at-point-run 'calc-at-point-get-number calc-at-point-get-number-regex 'atan beg end))
+  (calc-at-point-run #'calc-at-point-get-number calc-at-point-get-number-regex 'atan beg end))
 
 (provide 'calc-at-point)
 
